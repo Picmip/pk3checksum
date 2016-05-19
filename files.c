@@ -205,7 +205,7 @@ static unsigned FS_PK3GetFileInfo( FILE *f, unsigned pos, unsigned byteBeforeThe
 * Loads the header and directory, adding the files at the beginning
 * of the list so they override previous pack files.
 */
-unsigned FS_LoadPK3File( const char *packfilename )
+unsigned FS_LoadPK3File( const char *packfilename, char *errorstr, unsigned errorstr_size )
 {
 	int i;
 	int *checksums = NULL;
@@ -215,28 +215,27 @@ unsigned FS_LoadPK3File( const char *packfilename )
 	unsigned offset, centralPos, sizeCentralDir, offsetCentralDir, byteBeforeTheZipFile;
 	void *handle = NULL;
 	unsigned checksum;
-	unsigned silent = 0;
 
 	fin = fopen( packfilename, "rb" );
 	if( fin == NULL )
 	{
-		if( !silent ) fprintf( stderr, "Error opening PK3 file: %s\n", packfilename );
+		snprintf( errorstr, errorstr_size, "Error opening PK3 file: %s", packfilename );
 		goto error;
 	}
 	centralPos = FS_PK3SearchCentralDir( fin );
 	if( centralPos == 0 )
 	{
-		if( !silent ) fprintf( stderr, "No central directory found for PK3 file: %s\n", packfilename );
+		snprintf( errorstr, errorstr_size, "No central directory found for PK3 file: %s", packfilename );
 		goto error;
 	}
 	if( fseek( fin, centralPos, SEEK_SET ) != 0 )
 	{
-		if( !silent ) fprintf( stderr, "Error seeking PK3 file: %s\n", packfilename );
+		snprintf( errorstr, errorstr_size, "Error seeking PK3 file: %s", packfilename );
 		goto error;
 	}
 	if( fread( zipHeader, 1, sizeof( zipHeader ), fin ) != sizeof( zipHeader ) )
 	{
-		if( !silent ) fprintf( stderr, "Error reading PK3 file: %s\n", packfilename );
+		snprintf( errorstr, errorstr_size, "Error reading PK3 file: %s", packfilename );
 		goto error;
 	}
 
@@ -244,13 +243,13 @@ unsigned FS_LoadPK3File( const char *packfilename )
 	numFiles = LittleShortRaw( &zipHeader[8] );
 	if( !numFiles )
 	{
-		if( !silent ) fprintf( stderr,"%s is not a valid pk3 file\n", packfilename );
+		snprintf( errorstr, errorstr_size,"%s is not a valid pk3 file", packfilename );
 		goto error;
 	}
 	if( LittleShortRaw( &zipHeader[10] ) != numFiles || LittleShortRaw( &zipHeader[6] ) != 0
 		|| LittleShortRaw( &zipHeader[4] ) != 0 )
 	{
-		if( !silent ) fprintf( stderr, "%s is not a valid pk3 file\n", packfilename );
+		snprintf( errorstr, errorstr_size, "%s is not a valid pk3 file", packfilename );
 		goto error;
 	}
 
@@ -261,7 +260,7 @@ unsigned FS_LoadPK3File( const char *packfilename )
 	offsetCentralDir = LittleLongRaw( &zipHeader[16] );
 	if( centralPos < offsetCentralDir + sizeCentralDir )
 	{
-		if( !silent ) fprintf( stderr, "%s is not a valid pk3 file\n", packfilename );
+		snprintf( errorstr, errorstr_size, "%s is not a valid pk3 file", packfilename );
 		goto error;
 	}
 	byteBeforeTheZipFile = centralPos - offsetCentralDir - sizeCentralDir;
@@ -283,7 +282,7 @@ unsigned FS_LoadPK3File( const char *packfilename )
 
 	if( !checksum )
 	{
-		if( !silent ) fprintf( stderr, "Couldn't generate checksum for pk3 file: %s\n", packfilename );
+		snprintf( errorstr, errorstr_size, "Couldn't generate checksum for pk3 file: %s", packfilename );
 		goto error;
 	}
 

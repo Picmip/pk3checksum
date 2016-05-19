@@ -11,4 +11,4 @@ unsigned FS_ChecksumAbsoluteFile( const char *filename );
 * Loads the header and directory, adding the files at the beginning
 * of the list so they override previous pack files.
 */
-unsigned FS_LoadPK3File( const char *packfilename );
+unsigned FS_LoadPK3File( const char *packfilename, char *errstr, unsigned errstr_size );
