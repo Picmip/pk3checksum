@@ -1,4 +1,4 @@
-pk3checksum [![Build Status](https://travis-ci.org/Qfusion/pk3checksum.svg?branch=master)](https://travis-ci.org/Qfusion/pk3checksum)
+pk3checksum [![Build Status](https://travis-ci.org/Picmip/pk3checksum.svg?branch=master)](https://travis-ci.org/Picmip/pk3checksum)
 =======
 
 Checksumming utility for .pk3 archives, written in Go and C.
@@ -11,7 +11,7 @@ Simply type `go build` in project's root directory.
 
 ## Usage
 
-`pk3checksum <filename>`
+`pk3checksum <filename1> [filename2]`
 
 ## License (GPLv2)
 
