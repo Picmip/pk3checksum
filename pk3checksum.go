@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"os"
 	"sync"
-	"syscall"
 	"unsafe"
 )
 
@@ -16,13 +15,11 @@ func ChecksumFile(fileName string) (pk3cs, abscs uint, err error) {
 	var b []byte
 	var errbuf = make([]byte, 1024)
 
-	b, err = syscall.ByteSliceFromString(fileName)
-	if err != nil {
-		return
-	}
+	cparam := C.CString(param)
+	defer C.free(unsafe.Pointer(cparam))
 
-	pk3cs = uint(C.FS_LoadPK3File((*C.char)(unsafe.Pointer(&b[0])), (*C.char)(unsafe.Pointer(&errbuf[0])), C.uint(len(errbuf))))
-	abscs = uint(C.FS_ChecksumAbsoluteFile((*C.char)(unsafe.Pointer(&b[0]))))
+	pk3cs = uint(C.FS_LoadPK3File(cparam, (*C.char)(unsafe.Pointer(&errbuf[0])), C.uint(len(errbuf))))
+	abscs = uint(C.FS_ChecksumAbsoluteFile(cparam))
 
 	if pk3cs == 0 {
 		b := bytes.IndexByte(errbuf, 0x0)
