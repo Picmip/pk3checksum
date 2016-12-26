@@ -13,7 +13,6 @@ import (
 )
 
 func ChecksumFile(fileName string) (pk3cs, abscs uint, err error) {
-	var b []byte
 	var errbuf = make([]byte, 1024)
 
 	cparam := C.CString(fileName)
