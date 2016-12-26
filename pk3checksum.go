@@ -16,7 +16,7 @@ func ChecksumFile(fileName string) (pk3cs, abscs uint, err error) {
 	var b []byte
 	var errbuf = make([]byte, 1024)
 
-	cparam := C.CString(param)
+	cparam := C.CString(fileName)
 	defer C.free(unsafe.Pointer(cparam))
 
 	pk3cs = uint(C.FS_LoadPK3File(cparam, (*C.char)(unsafe.Pointer(&errbuf[0])), C.uint(len(errbuf))))
