@@ -1,5 +1,6 @@
 package main
 
+//#include <stdlib.h>
 //#include "md5.h"
 //#include "files.h"
 import "C"
